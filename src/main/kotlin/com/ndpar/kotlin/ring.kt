@@ -20,12 +20,14 @@ private fun process() = Channel<Message>()
  * - N number of coroutines/channels in the ring
  * - M number of messages/cycles
  * - T text message
+ *
+ * Compare to Erlang: https://github.com/ndpar/erlang/blob/master/src/ring2.erl
  */
 fun main(args: Array<String>) = runBlocking {
     val (n, m, message) = args
     val time = measureTimeMillis {
         val first = process()
-        val last = (1..n.toInt()).fold(first) { to, _ ->
+        val last = (1..n.toInt()).asSequence().fold(first) { to, _ ->
             process().also { from ->
                 launch {
                     relay(from, to)
